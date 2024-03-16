@@ -1,6 +1,8 @@
 from selenium import webdriver
 import time
 from selenium.webdriver.common.by import By
+import re
+import os
 
 
 class TextAnalyzer:
@@ -30,7 +32,7 @@ class TextAnalyzer:
         button = self.driver.find_element(By.XPATH, '/html/body/form[1]/p[3]/input')
         button.click()
 
-        time.sleep(6)
+        time.sleep(3)
 
         # находим элемент, содержащий текст
         result_element = self.driver.find_element(By.XPATH, '/html/body/p[1]')
@@ -56,14 +58,22 @@ class TextAnalyzer:
             element = self.driver.find_element(By.XPATH, xpath)
             assert int(element.text) >= expected_value
 
+    def take_screenshot(self, text_file_path):
+        screenshot_path = 'screenshots/' + re.search(r'[^/\\]+(?=\.\w+$)', text_file_path).group(0) + '.png'
+        self.driver.save_screenshot(screenshot_path)
+
     def run(self, text_file_path):
         with open(text_file_path, "r") as file:
             text = file.read()
             self.start_driver()
             self.analyze_text(text)
+            self.take_screenshot(text_file_path)
             self.stop_driver()
 
 
 if __name__ == "__main__":
+    books_directory_path = "texts/"
+    books = os.listdir(books_directory_path)
     analyzer = TextAnalyzer()
-    analyzer.run("texts/dostoevskiy.txt")
+    for book in books:
+        analyzer.run(f"texts/{book}")
