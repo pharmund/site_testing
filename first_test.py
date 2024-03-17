@@ -40,10 +40,10 @@ class TextAnalyzer:
         # записываем в переменную result_phrase текст из элемента result_element
         result_phrase = result_element.text
 
-        # с помощью assert проверяем, что ожидаемый текст совпадает с текстом на странице сайта
+        # с помощью assert проверяет, что ожидаемый текст совпадает с текстом на странице сайта
         assert "The following results are returned:" == result_phrase
 
-        # Проверяем, что количество слов больше или равно 0
+        # Проверяет, что количество слов больше или равно 0
         elements = [
             ('/html/body/center[3]/table/tbody/tr/td[2]', 0),
             ('/html/body/center[3]/table/tbody/tr/td[4]', 0),
@@ -59,21 +59,34 @@ class TextAnalyzer:
             assert int(element.text) >= expected_value
 
     def take_screenshot(self, text_file_path):
+        """Делает скриншот"""
         screenshot_path = 'screenshots/' + re.search(r'[^/\\]+(?=\.\w+$)', text_file_path).group(0) + '.png'
         self.driver.save_screenshot(screenshot_path)
+
+    def go_back(self):
+        """"Возвращается на предыдущую страницу"""
+        self.driver.back()
+
+    def clear_field(self):
+        """"Очищает поле"""
+        element = self.driver.find_element(By.XPATH, "/html/body/form[1]/table/tbody/tr/td[2]/input")
+        element.clear()
+        time.sleep(1)
 
     def run(self, text_file_path):
         with open(text_file_path, "r") as file:
             text = file.read()
-            self.start_driver()
             self.analyze_text(text)
             self.take_screenshot(text_file_path)
-            self.stop_driver()
+            self.driver.back()
+            self.clear_field()
 
 
 if __name__ == "__main__":
     books_directory_path = "texts/"
     books = os.listdir(books_directory_path)
     analyzer = TextAnalyzer()
+    analyzer.start_driver()
     for book in books:
         analyzer.run(f"texts/{book}")
+    analyzer.stop_driver()
