@@ -63,10 +63,6 @@ class TextAnalyzer:
         screenshot_path = 'screenshots/' + re.search(r'[^/\\]+(?=\.\w+$)', text_file_path).group(0) + '.png'
         self.driver.save_screenshot(screenshot_path)
 
-    def go_back(self):
-        """"Возвращается на предыдущую страницу"""
-        self.driver.back()
-
     def clear_field(self):
         """"Очищает поле"""
         element = self.driver.find_element(By.XPATH, "/html/body/form[1]/table/tbody/tr/td[2]/input")
