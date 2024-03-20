@@ -1,3 +1,5 @@
+import datetime
+
 from selenium import webdriver
 import time
 from selenium.webdriver.common.by import By
@@ -12,7 +14,7 @@ class TextAnalyzer:
     def start_driver(self):
         options = webdriver.ChromeOptions()
         # options.binary_location = "C:\\Users\\Redmi\\Desktop\\yandexdriver.exe"
-        options.add_argument("--headless")
+        #options.add_argument("--headless")
         self.driver = webdriver.Chrome(options=options)
         self.driver.maximize_window()
         print("Start driver")
@@ -69,7 +71,13 @@ class TextAnalyzer:
 
     def take_screenshot(self, text_file_path):
         """Делает скриншот"""
-        screenshot_path = 'screenshots/' + re.search(r'[^/\\]+(?=\.\w+$)', text_file_path).group(0) + '.png'
+        current_time = str(datetime.datetime.utcnow().strftime("%Y_%m_%d_%H_%M"))
+        print(current_time)
+
+        file_name = str(re.search(r'[^/\\]+(?=\.\w+$)', text_file_path).group(0))
+        screenshot_path = 'screenshots/' + file_name + ' ' + current_time + '.png'
+
+        # screenshot_path = 'screenshots/' + re.search(r'[^/\\]+(?=\.\w+$)', text_file_path).group(0) + '.png'
         self.driver.save_screenshot(screenshot_path)
         print("Screenshot")
 
@@ -79,6 +87,8 @@ class TextAnalyzer:
         element.clear()
         time.sleep(1)
         print("Field is cleared")
+
+
 
     def run(self, text_file_path):
         with open(text_file_path, "r") as file:
@@ -98,3 +108,4 @@ if __name__ == "__main__":
     for book in books:
         analyzer.run(f"texts/{book}")
     analyzer.stop_driver()
+
