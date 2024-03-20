@@ -69,17 +69,19 @@ class TextAnalyzer:
         assert current_url == "http://www.pharmund.ru/search4"
         print(f'Current_url is ok')
 
-    def take_screenshot(self, text_file_path):
-        """Делает скриншот"""
-        current_time = str(datetime.datetime.utcnow().strftime("%Y_%m_%d_%H_%M"))
-        print(current_time)
-
+    def make_screenshot_path(self, text_file_path):
+        """Создаёт путь и название скриншота с датой"""
         file_name = str(re.search(r'[^/\\]+(?=\.\w+$)', text_file_path).group(0))
-        screenshot_path = 'screenshots/' + file_name + ' ' + current_time + '.png'
+        return 'screenshots/' + file_name + ' ' + str(datetime.datetime.utcnow().strftime("%Y_%m_%d_%H_%M_%S")) + '.png'
 
-        # screenshot_path = 'screenshots/' + re.search(r'[^/\\]+(?=\.\w+$)', text_file_path).group(0) + '.png'
-        self.driver.save_screenshot(screenshot_path)
-        print("Screenshot")
+    def take_screenshot(self, text_file_path):
+        """Делает скриншоты"""
+
+        self.driver.save_screenshot(self.make_screenshot_path(text_file_path))
+        self.driver.execute_script('window.scrollTo(0, 550)')
+        time.sleep(2)
+        self.driver.save_screenshot(self.make_screenshot_path(text_file_path))
+        print("Take screenshot")
 
     def clear_field(self):
         """"Очищает поле"""
